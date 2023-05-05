@@ -11,6 +11,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppGaleria"
         tools:targetApi="31">
+
+        <provider
+            android:authorities="andrades.isabelly.appgaleria.fileprovider"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths">
+            </meta-data>
+        </provider>
+
         <activity
             android:name=".PhotoActivity"
             android:parentActivityName=".MainActivity" />
