@@ -29,7 +29,7 @@ public class MainAdapter extends RecyclerView.Adapter{
         int h = (int) mainActivity.getResources().getDimension(R.dimen.itemHeight);
 
         // coloca a imagem em um bitmap com o tamanho definido anteriormente
-        Bitmap bitmap = Utils.getBitmap(photos.get(position), w,h);
+        Bitmap bitmap = Util.getBitmap(photos.get(position), w,h);
 
         // define o imPhoto como o bitmap
         imPhoto.setImageBitmap(bitmap);

@@ -24,6 +24,9 @@ public class PhotoActivity extends AppCompatActivity {
 
         // encontra a barra de atividades
         Toolbar toolbar = findViewById(R.id.tbPhoto);
+        // encontra a view da imagem
+        ImageView imPhoto = findViewById(R.id.imPhoto);
+
         //define a action bar encontrada como padrao
         setSupportActionBar(toolbar);
 
@@ -32,11 +35,14 @@ public class PhotoActivity extends AppCompatActivity {
         // coloca o botão de voltar na action bar
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        // recebe a intent enviada pelo startPhotoActivity
         Intent i = getIntent();
+        // recebe o endereço da imagem que estava na intent
         photoPath = i.getStringExtra("photo_path");
 
-        Bitmap bitmap = Utils.getBitmap(photoPath);
-        ImageView imPhoto = findViewById(R.id.imPhoto);
+        // carrega o bitmap da imagem
+        Bitmap bitmap = Util.getBitmap(photoPath);
+        // define a imagem
         imPhoto.setImageBitmap(bitmap);
 
     }
