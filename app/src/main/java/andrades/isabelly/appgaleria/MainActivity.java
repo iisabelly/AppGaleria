@@ -2,15 +2,22 @@ package andrades.isabelly.appgaleria;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AlertDialogLayout;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -30,6 +37,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     static int RESULT_TAKE_PICTURE = 1;
+    static int RESULT_REQUEST_PERMISSION = 2;
     String currentPhotoPath;
     List<String> photos = new ArrayList<>();
     MainAdapter mainAdapter;
@@ -41,6 +49,11 @@ public class MainActivity extends AppCompatActivity {
         // acessa o diretório de fotos
         File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File[] files = dir.listFiles();
+
+        List<String> permissions = new ArrayList<>();
+        permissions.add(Manifest.permission.CAMERA);
+        checkForPermissions(permissions);
+
 
         // adiciona as fotos ao array de fotos
         for(int i = 0; i < files.length; i++) {
@@ -60,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         // calcula o número de itens que cabem na tela
         int numberOfColumns = Util.calculateNoOfColumns(MainActivity.this, w);
         // cria a grid para colocar os itens
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, w);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, numberOfColumns);
         // define o layout da recycler view como a grid
         rvGallery.setLayoutManager(gridLayoutManager);
 
@@ -168,6 +181,59 @@ public class MainActivity extends AppCompatActivity {
                 File f = new File(currentPhotoPath);
                 f.delete();
             }
+        }
+    }
+
+    private void checkForPermissions(List<String> permissions) {
+        List<String> permissionsNotGranted = new ArrayList<>();
+
+        for(String permission : permissions) {
+            if (!hasPermission(permission)) {
+                permissionsNotGranted.add(permission);
+            }
+        }
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(permissionsNotGranted.size() > 0) {
+                requestPermissions((permissionsNotGranted.toArray(new String[permissionsNotGranted.size()])),
+                        RESULT_REQUEST_PERMISSION);
+            }
+        }
+    }
+
+    private boolean hasPermission(String permission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return ActivityCompat.checkSelfPermission(MainActivity.this, permission) ==
+                    PackageManager.PERMISSION_GRANTED;
+        }
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        final List<String> permissionsRejected = new ArrayList<>();
+        if(requestCode == RESULT_REQUEST_PERMISSION) {
+            for(String permission : permissions) {
+                if (!hasPermission(permission)) {
+                    permissionsRejected.add(permission);
+                }
+            }
+        }
+
+        if(permissionsRejected.size() > 0) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (shouldShowRequestPermissionRationale(permissionsRejected.get(0))){
+                    new AlertDialog.Builder(MainActivity.this).setMessage("Para usar essa app" +
+                            "é preciso conceder essas permissões").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            requestPermissions(permissionsRejected.toArray(new String[
+                                    permissionsRejected.size()]), RESULT_REQUEST_PERMISSION);
+                        }
+                    }).create().show();
+                }
             }
         }
     }
