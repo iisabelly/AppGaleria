@@ -1,7 +1,9 @@
 package andrades.isabelly.appgaleria;
 
 import android.graphics.Bitmap;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,17 @@ public class MainAdapter extends RecyclerView.Adapter{
     public MainAdapter(MainActivity mainActivity, List<String> photos) {
         this.mainActivity = mainActivity;
         this.photos = photos;
+    }
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // lê o arquivo xml
+        LayoutInflater inflater = LayoutInflater.from(mainActivity);
+        // cria o novo objeto
+        View v = inflater.inflate(R.layout.list_item, parent, false);
+        // retorna a view dentro de um holder
+        return new MyViewHolder(v);
     }
 
     @Override
@@ -43,5 +56,10 @@ public class MainAdapter extends RecyclerView.Adapter{
                 mainActivity.startPhotoActivity(photos.get(position));
             }
         });
+    }
+
+    @Override
+    public int getItemCount(){
+        return photos.size();
     }
 }

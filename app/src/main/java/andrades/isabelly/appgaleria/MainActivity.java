@@ -50,8 +50,11 @@ public class MainActivity extends AppCompatActivity {
         File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File[] files = dir.listFiles();
 
+        // cria a lista de permissões
         List<String> permissions = new ArrayList<>();
+        // adiciona a permissão para a camera na lista
         permissions.add(Manifest.permission.CAMERA);
+        // verifica se as permissões que estão na lista não foram aceitas
         checkForPermissions(permissions);
 
 
@@ -187,12 +190,15 @@ public class MainActivity extends AppCompatActivity {
     private void checkForPermissions(List<String> permissions) {
         List<String> permissionsNotGranted = new ArrayList<>();
 
+        // roda a lista de permissões
         for(String permission : permissions) {
+            // se a permissão não foi aceita, ela é adicionada a lista de permissões não aceitas
             if (!hasPermission(permission)) {
                 permissionsNotGranted.add(permission);
             }
         }
 
+        // as permissões não aceitas pelo usuário são solicitadas a ele novamente
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if(permissionsNotGranted.size() > 0) {
                 requestPermissions((permissionsNotGranted.toArray(new String[permissionsNotGranted.size()])),
@@ -202,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean hasPermission(String permission) {
+        // verifica se a permissão já foi aceita
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return ActivityCompat.checkSelfPermission(MainActivity.this, permission) ==
                     PackageManager.PERMISSION_GRANTED;
@@ -214,17 +221,22 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         final List<String> permissionsRejected = new ArrayList<>();
+        // verifica se as permissões solicitadas foram aceitas
         if(requestCode == RESULT_REQUEST_PERMISSION) {
             for(String permission : permissions) {
+                // se não foram aceitas elas são adicionadas a lista de permissões rejeitadas
                 if (!hasPermission(permission)) {
                     permissionsRejected.add(permission);
                 }
             }
         }
 
+        // condição para verificar se a lista de permissões rejeitadas possuir algum item
         if(permissionsRejected.size() > 0) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (shouldShowRequestPermissionRationale(permissionsRejected.get(0))){
+                    // se a permissão for necessária para o uso do aplicativo um alerta aparece
+                    // para o usuário aceitar a permissão
                     new AlertDialog.Builder(MainActivity.this).setMessage("Para usar essa app" +
                             "é preciso conceder essas permissões").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override

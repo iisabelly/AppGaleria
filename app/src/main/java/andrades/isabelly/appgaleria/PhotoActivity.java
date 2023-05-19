@@ -74,12 +74,16 @@ public class PhotoActivity extends AppCompatActivity {
     }
 
     void sharePhoto() {
-
+        // gera um uri para a foto
         Uri photoUri = FileProvider.getUriForFile(PhotoActivity.this,
                 "andrades.isabelly.appgaleria.fileprovider", new File(photoPath));
+        // cria um intent para enviar a imagem
         Intent i = new Intent(Intent.ACTION_SEND);
+        // adiciona o arquivo que o usuário quer compartilhar
         i.putExtra(Intent.EXTRA_STREAM, photoUri);
+        // define o tipo do arquivo que vai ser compartilhado
         i.setType("image/jpeg");
+        // executa a intent
         startActivity(i);
     }
 }
